@@ -10,38 +10,41 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Set up Python 3.11
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
-      - name: Install system dependencies
+      - name: Install System Dependencies
         run: |
-          sudo apt-get update
+          sudo apt-get update -qq
           sudo apt-get install -y \
             git zip unzip openjdk-17-jdk \
             python3-pip autoconf libtool \
             pkg-config zlib1g-dev libncurses5-dev
 
-      - name: Install Python tools
+      - name: Install Buildozer & Cython
         run: |
-          python -m pip install --upgrade pip wheel
-          pip install --user buildozer cython==0.29.19 virtualenv
+          pip install --upgrade pip wheel
+          pip install --user buildozer cython==0.29.19
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-      - name: Configure Buildozer
+      - name: Check buildozer.spec
         run: |
           if [ ! -f buildozer.spec ]; then
-            buildozer init
+            echo "Error: buildozer.spec not found!"
+            exit 1
+          else
+            echo "Using existing buildozer.spec"
+            cat buildozer.spec
           fi
-          sed -i 's/android.release = True/android.release = False/' buildozer.spec
 
-      - name: Build APK (Debug)
+      - name: Build APK (Debug Mode)
         run: |
           buildozer -v android debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Android-Debug-APK
+          name: Android-APK
           path: bin/*.apk
