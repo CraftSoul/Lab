@@ -5,44 +5,31 @@ on: [push, pull_request]
 jobs:
   build-android:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
 
-    - name: Install Buildozer dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libtinfo5
-        pip install --user buildozer cython==0.29.19 virtualenv
+      - name: Install Buildozer dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev
 
-    - name: Run Buildozer
-      run: |
-        export PATH=$PATH:~/.local/bin/
-        buildozer init
-        buildozer -v android debug
-        ls bin/
+      - name: Install Buildozer
+        run: |
+          pip install --user buildozer cython==0.29.19 virtualenv
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-    - name: Upload APK
-      uses: actions/upload-artifact@v3
-      with:
-        name: Android-App
-        path: bin/*.apk          libavformat-dev \
-          libavcodec-dev \
-          zlib1g-dev
-        
-        pip install --upgrade pip
-        pip install buildozer cython virtualenv
-    
-    - name: Run Buildozer
-      run: |
-        buildozer -v android release
-      
-    - name: Upload APK artifact
-      with:
-        name: DL6-OxygenFight
-        path: bin/*.apk
+      - name: Run Buildozer
+        run: |
+          buildozer init
+          buildozer -v android debug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4  # 关键修改点
+        with:
+          name: Android-APK
+          path: bin/*.apk
