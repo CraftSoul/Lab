@@ -5,6 +5,8 @@ on: [push, pull_request]
 jobs:
   build-android:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+
     steps:
       - uses: actions/checkout@v4
 
@@ -13,23 +15,33 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install Buildozer dependencies
+      - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev
+          sudo apt-get install -y \
+            git zip unzip openjdk-17-jdk \
+            python3-pip autoconf libtool \
+            pkg-config zlib1g-dev libncurses5-dev
 
-      - name: Install Buildozer
+      - name: Install Python tools
         run: |
+          python -m pip install --upgrade pip wheel
           pip install --user buildozer cython==0.29.19 virtualenv
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-      - name: Run Buildozer
+      - name: Configure Buildozer
         run: |
-          buildozer init
+          if [ ! -f buildozer.spec ]; then
+            buildozer init
+          fi
+          sed -i 's/android.release = True/android.release = False/' buildozer.spec
+
+      - name: Build APK (Debug)
+        run: |
           buildozer -v android debug
 
       - name: Upload APK
-        uses: actions/upload-artifact@v4  # 关键修改点
+        uses: actions/upload-artifact@v4
         with:
-          name: Android-APK
+          name: Android-Debug-APK
           path: bin/*.apk
