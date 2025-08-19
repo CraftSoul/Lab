@@ -2,7 +2,7 @@ from kivy.app import App,Widget
 from kivy.clock import Clock
 from kivy.uix.label import Label
 from kivy.uix.relativelayout import RelativeLayout
-from kivy.uix. import 
+from kivy.uix.image import Image
 from kivy.graphics import Color,Rectangle,Line
 from kivy.uix.button import Button
 from kivy.uix.popup import Popup
@@ -36,7 +36,7 @@ history=[]
 class app(App):
 	def __init__(self):
 		super(app,self).__init__()
-		self.bg=(source='/bg.png',allow_stretch=True,keep_ratio=True)
+		self.bg=Image(source='bg.png',allow_stretch=True,keep_ratio=True)
 		Clock.schedule_interval(self.update,1/50)
 		self.sample=Card(None,'抑制',0,pos_hint={'x':0.15,'y':0.275},size_hint=(0.15,0.45))
 		self.dl=Button(text='保存',pos_hint={'x':0.15,'y':0.165},size_hint=(0.15,0.1),font_name='114',background_color=(3,2.73,2.4),color=(0,0,0))
@@ -49,25 +49,25 @@ class app(App):
 		self.air=Button(background_color=(0,0,0,0))
 		self.air.bind(on_press=self.sob)
 		self.takethat=Button(text='出示',size_hint=(0.11,0.1),pos_hint={'x':0.78,'y':0.2},background_color=(0.5,0.2,0.2),font_name='114')
-		self.amns=(source='/异议.png',pos_hint={'center_x':0.5,'center_y':0.5},size_hint=(0.5,0.5),allow_stretch=True,keep_ratio=True)
-		self.cnm=SoundLoader.load('/异议.ogg')
+		self.amns=Image(source='异议.png',pos_hint={'center_x':0.5,'center_y':0.5},size_hint=(0.5,0.5),allow_stretch=True,keep_ratio=True)
+		self.cnm=SoundLoader.load('异议.ogg')
 		self.cnm.bind(on_stop=self.aaa)
 		self.takethat.bind(on_press=self.objection)
 		self.endturn=Button(text='结束回合',size_hint=(0.11,0.1),pos_hint={'x':0.78,'y':0.05},background_color=(0.5,0.2,0.2),font_name='114')
-		self.bgm=SoundLoader.load('/bgm.ogg')
+		self.bgm=SoundLoader.load('bgm.ogg')
 		self.bgm.loop=True
 		self.bgm.play()
-		self.home=(pos_hint={'y':0},size_hint=(1,1.2),source='/home.png',allow_stretch=True,keep_ratio=True)
+		self.home=Image(pos_hint={'y':0},size_hint=(1,1.2),source='home.png',allow_stretch=True,keep_ratio=True)
 		u=Animation(pos_hint={'y':-0.2},duration=10)+Animation(pos_hint={'y':0},duration=10)
 		u.repeat=True
 		u.start(self.home)
-		self.t=(source='/title.png',size_hint=(1,0.3),pos_hint={'y':0.6},allow_stretch=True,keep_ratio=True)
+		self.t=Image(source='title.png',size_hint=(1,0.3),pos_hint={'y':0.6},allow_stretch=True,keep_ratio=True)
 		self.help=Button(text='帮助',pos_hint={'x':0.35,'y':0.3},size_hint=(0.3,0.1),font_name='114',background_color=(3,2.73,2.4),color=(0,0,0))
 		self.help.bind(on_press=self.guide)
 		self.st=Button(text='开始',pos_hint={'x':0.35,'y':0.15},size_hint=(0.3,0.1),font_name='114',background_color=(3,2.73,2.4),color=(0,0,0))
 		self.st.bind(on_press=self.go)
 		self.bl=Rect((0,0,0,1),pos_hint={'y':1})
-		self.inroduction=[Button(background_normal=f'/{x}.jpg') for x in range(4)]
+		self.inroduction=[Button(background_normal=f'{x}.jpg') for x in range(4)]
 		for x in self.inroduction:
 			x.bind(on_press=layout.remove_widget)
 		self.ending=1
@@ -259,7 +259,7 @@ class Card(RelativeLayout):
 		with self.canvas:
 			Color(0.3,0.2,0.2)
 			self.rect=Rectangle(size=self.size)
-			self.add_widget((source=f'/{name}.png',size_hint=(0.9,0.52),pos_hint={'x':0.05,'y':0.45},allow_stretch=True,keep_ratio=False))
+			self.add_widget(Image(source=f'{name}.png',size_hint=(0.9,0.52),pos_hint={'x':0.05,'y':0.45},allow_stretch=True,keep_ratio=False))
 			self.line=Line(points=[[0.98,0.48],[0.75,0.46],[0.25,0.46],[0.02,0.48]],color=(1,1,1))
 			self.nt=Label(text=name,font_name='114',pos_hint={'y':-0.04},color=(0,0,0))
 			self.add_widget(self.nt)
@@ -322,7 +322,7 @@ class Player:
 			self.oa=Animation(background_color=(0.5,0.2,0.2,0.5),duration=0.1)
 			self.ca=Animation(background_color=(0.5,0.2,0.2,1),duration=0.1)
 		else:
-			self.head=(source=f'/{name}.png',size_hint=(0.1,0.2),pos_hint={'x':x,'y':0.6},allow_stretch=True,keep_ratio=True)
+			self.head=Image(source=f'{name}.png',size_hint=(0.1,0.2),pos_hint={'x':x,'y':0.6},allow_stretch=True,keep_ratio=True)
 			self.ot=Label(font_name='114',pos_hint={'x':x-0.35,'y':0.26},font_size='20sp',color=(0,0,0))
 			self.ht=Label(font_name='114',pos_hint={'x':x-0.35,'y':0.2},font_size='20sp',color=(0,0,0))
 			self.ct=Label(font_name='114',pos_hint={'x':x-0.35,'y':0.14},font_size='20sp',color=(0,0,0))
