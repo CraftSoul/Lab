@@ -21,8 +21,26 @@ jobs:
           sudo apt-get install -y \
             git zip unzip openjdk-17-jdk \
             python3-pip autoconf libtool \
-            pkg-config zlib1g-dev libncurses5-dev\
-            Aidl
+            pkg-config zlib1g-dev libncurses5-dev
+
+      - name: Install Android SDK and NDK
+        run: |
+          wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
+          mkdir -p android-sdk/cmdline-tools
+          unzip commandlinetools-linux-8512546_latest.zip -d android-sdk/cmdline-tools
+          mv android-sdk/cmdline-tools/cmdline-tools android-sdk/cmdline-tools/latest
+          echo "export ANDROID_SDK_ROOT=$PWD/android-sdk" >> $GITHUB_ENV
+          echo "export PATH=$PWD/android-sdk/cmdline-tools/latest/bin:$PATH" >> $GITHUB_ENV
+          
+          # 接受Android SDK许可证
+          yes | sdkmanager --licenses
+          
+          # 安装必要的SDK组件
+          sdkmanager "platform-tools" "platforms;android-30" "build-tools;30.0.3"
+          
+          # 安装NDK
+          sdkmanager "ndk;23.1.7779620"
+          echo "export ANDROID_NDK_HOME=$PWD/android-sdk/ndk/23.1.7779620" >> $GITHUB_ENV
 
       - name: Install Buildozer & Cython
         run: |
@@ -30,22 +48,34 @@ jobs:
           pip install --user buildozer cython==0.29.19
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-      - name: Check buildozer.spec
+      - name: Initialize Buildozer
         run: |
+          # 如果不存在buildozer.spec，则创建
           if [ ! -f buildozer.spec ]; then
-            echo "Error: buildozer.spec not found!"
-            exit 1
-          else
-            echo "Using existing buildozer.spec"
-            cat buildozer.spec
+            buildozer init
           fi
+          cat buildozer.spec
 
       - name: Build APK (Debug Mode)
         run: |
-          buildozer -v android debug
+          # 设置构建选项，避免交互式提示
+          buildozer -v android debug 2>&1 | tee build.log
+          # 如果构建失败，输出日志以便调试
+          if [ $? -ne 0 ]; then
+            echo "Build failed. Showing log:"
+            tail -100 build.log
+            exit 1
+          fi
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: Android-APK
           path: bin/*.apk
+
+      - name: Upload Build Log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Build-Log
+          path: build.log
