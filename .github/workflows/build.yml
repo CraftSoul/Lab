@@ -58,6 +58,7 @@ jobs:
 
     - name: Build with Buildozer
       run: |
+        export PATH="/usr/bin:$PATH"
         buildozer -v android debug
       env:
         PATH: "/home/runner/.local/bin:$PATH"
