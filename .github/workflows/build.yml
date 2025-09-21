@@ -43,7 +43,8 @@ jobs:
             libncursesw5-dev \
             cmake \
             libffi-dev \
-            libssl-dev
+            libssl-dev \
+            automake
         sudo apt-get install -y libtinfo5 || \
         sudo apt-get install -y libtinfo-dev || \
         sudo apt-get install -y ncurses-term || \
