@@ -30,20 +30,20 @@ jobs:
         apt-cache search libtinfo | head -5 || echo "No libtinfo packages found"
         apt-cache search ncurses | grep tinfo | head -5 || echo "No tinfo-related packages found"
         sudo apt-get install -y \
-          git \
-          zip \
-          unzip \
-          openjdk-8-jdk \
-          python3-pip \
-          autoconf \
-          libtool \
-          pkg-config \
-          zlib1g-dev \
-          libncurses5-dev \
-          libncursesw5-dev \
-          cmake \
-          libffi-dev \
-          libssl-dev
+            git \
+            zip \
+            unzip \
+            openjdk-8-jdk \
+            python3-pip \
+            autoconf \
+            libtool \
+            pkg-config \
+            zlib1g-dev \
+            libncurses5-dev \
+            libncursesw5-dev \
+            cmake \
+            libffi-dev \
+            libssl-dev
         sudo apt-get install -y libtinfo5 || \
         sudo apt-get install -y libtinfo-dev || \
         sudo apt-get install -y ncurses-term || \
