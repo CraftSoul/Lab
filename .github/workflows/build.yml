@@ -14,17 +14,6 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-    
-    - name: Update autoconf config
-  run: |
-    if [ -f configure.ac ]; then
-      autoupdate configure.ac
-    elif [ -f configure.in ]; then
-      autoupdate configure.in
-    fi
-    if [ -f configure.ac ] || [ -f configure.in ]; then
-      autoreconf -ivf
-    fi
 
     - name: Set up Python
       uses: actions/setup-python@v5
