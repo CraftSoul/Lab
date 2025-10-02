@@ -71,11 +71,11 @@ jobs:
         pip install cython==0.29.19
         pip install virtualenv
 
-    - name: Verify Git installation
-      run: |
-        which git
-        git --version
-        echo "PATH: $PATH"
+    - name: Run autoreconf
+      run: autoreconf -fi
+
+    - name: Copy libtool m4 macros
+      run: cp /usr/share/aclocal/libtool.m4 /usr/share/aclocal/lt*.m4 ./m4/ || true
 
     - name: Build with Buildozer
       run: |
