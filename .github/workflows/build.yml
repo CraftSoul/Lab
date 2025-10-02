@@ -71,9 +71,6 @@ jobs:
         pip install cython==0.29.19
         pip install virtualenv
 
-    - name: Run autoreconf
-      run: autoreconf -fi
-
     - name: Copy libtool m4 macros
       run: cp /usr/share/aclocal/libtool.m4 /usr/share/aclocal/lt*.m4 ./m4/ || true
 
