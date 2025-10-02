@@ -20,6 +20,9 @@ jobs:
       with:
         python-version: '3.11'
 
+    - name: Install Git
+      run: sudo apt-get update && sudo apt-get install -y git
+
     - name: Install system dependencies
       run: |
         sudo apt-get update
@@ -30,7 +33,6 @@ jobs:
         apt-cache search libtinfo | head -5 || echo "No libtinfo packages found"
         apt-cache search ncurses | grep tinfo | head -5 || echo "No tinfo-related packages found"
         sudo apt-get install -y \
-            git \
             zip \
             unzip \
             openjdk-8-jdk \
