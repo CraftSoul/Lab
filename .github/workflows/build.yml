@@ -60,9 +60,9 @@ jobs:
         echo "Optional terminal packages not available, continuing anyway"
         mkdir -p ./m4
         cp /usr/share/aclocal/libtool.m4 /usr/share/aclocal/lt*.m4 ./m4/ || true
-        aclocal -I m4
-        autoreconf --install
+        aclocal -I m4 --install
         autoupdate
+        autoreconf --install
 
     - name: Set up Android SDK
       run: |
