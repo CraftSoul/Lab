@@ -72,7 +72,7 @@ jobs:
         pip install buildozer
         pip install cython==0.29.19
         pip install virtualenv
-        pip install kivy=2.2.1
+        pip install kivy==2.2.1
         pip install plyer
 
     - name: Copy libtool m4 macros
