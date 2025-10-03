@@ -78,9 +78,6 @@ jobs:
         pip install kivy==2.2.1
         pip install plyer
 
-    - name: Copy libtool m4 macros
-      run: cp /usr/share/aclocal/libtool.m4 /usr/share/aclocal/lt*.m4 ./m4/ || true
-
     - name: Build with Buildozer
       run: |
         export PATH="$HOME/.local/bin:$PATH"
