@@ -1,4 +1,4 @@
-bin_PROGRAMS = DL6-OxygenFight
+bin_PROGRAMS = main.py
 EXTRA_DIST = \
     0.jpg \
     1.jpg \
@@ -9,7 +9,6 @@ EXTRA_DIST = \
     data.py \
     font.ttf \
     home.png \
-    main.py \
     title.png \
     仓院之壶.png \
     勾玉.png \
