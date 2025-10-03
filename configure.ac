@@ -1,5 +1,6 @@
 AC_INIT([DL6-OxygenFight], [12.28])
 AM_INIT_AUTOMAKE
 AC_PROG_CC
+m4_pattern_allow([LT_SYS_SYMBOL_USCORE])
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
