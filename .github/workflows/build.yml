@@ -59,7 +59,7 @@ jobs:
         sudo apt-get install -y ncurses-term || \
         echo "Optional terminal packages not available, continuing anyway"
         mkdir -p ./m4
-        cp /usr/share/aclocal/libtool.m4 /usr/share/aclocal/lt*.m4 ./m4/ || true
+        cp /usr/share/aclocal/libtool.m4 ./m4/ cp /usr/share/aclocal/lt*.m4 ./m4/ 2>/dev/null || true
         export ACLOCAL_PATH=./m4:/usr/share/aclocal
         libtoolize --force --copy
         aclocal -I m4 --install
