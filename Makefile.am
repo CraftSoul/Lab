@@ -26,3 +26,4 @@ EXTRA_DIST = \
     心灵枷锁.png \
     思考者.png \
     手枪.png
+AUTHORS = 百年匠魂
