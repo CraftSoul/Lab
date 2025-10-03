@@ -58,6 +58,8 @@ jobs:
         sudo apt-get install -y libtinfo-dev || \
         sudo apt-get install -y ncurses-term || \
         echo "Optional terminal packages not available, continuing anyway"
+        autoreconf --install
+        autoupdate
 
     - name: Set up Android SDK
       run: |
@@ -70,6 +72,8 @@ jobs:
         pip install buildozer
         pip install cython==0.29.19
         pip install virtualenv
+        pip install kivy=2.2.1
+        pip install plyer
 
     - name: Copy libtool m4 macros
       run: cp /usr/share/aclocal/libtool.m4 /usr/share/aclocal/lt*.m4 ./m4/ || true
