@@ -22,18 +22,9 @@ jobs:
       with:
         python-version: '3.11'
 
-    - name: Install Git
-      run: sudo apt-get update && sudo apt-get install -y git
-
     - name: Install system dependencies
       run: |
         sudo apt-get update
-        sudo add-apt-repository --yes universe
-        sudo add-apt-repository --yes multiverse
-        sudo add-apt-repository --yes restricted
-        sudo apt-get update
-        apt-cache search libtinfo | head -5 || echo "No libtinfo packages found"
-        apt-cache search ncurses | grep tinfo | head -5 || echo "No tinfo-related packages found"
         sudo apt-get install -y \
             git \
             zip \
@@ -42,7 +33,9 @@ jobs:
             python3-pip \
             python3-venv \
             autoconf \
+            automake \
             libtool \
+            libtool-bin \
             pkg-config \
             zlib1g-dev \
             libncurses5-dev \
@@ -50,23 +43,8 @@ jobs:
             cmake \
             libffi-dev \
             libssl-dev \
-            automake \
             ninja-build \
-            curl \
-            m4 \
-            libtool-bin
-        sudo apt-get install -y libtinfo5 || \
-        sudo apt-get install -y libtinfo-dev || \
-        sudo apt-get install -y ncurses-term || \
-        echo "Optional terminal packages not available, continuing anyway"
-        mkdir -p m4
-        cp /usr/share/aclocal/libtool.m4 ./m4/
-        cp /usr/share/aclocal/lt*.m4 ./m4/
-        export ACLOCAL_PATH=./m4:/usr/share/aclocal
-        libtoolize --force --copy
-        aclocal -I m4 --install
-        autoupdate
-        autoreconf --install
+            curl
 
     - name: Set up Android SDK
       run: |
