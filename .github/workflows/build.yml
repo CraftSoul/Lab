@@ -44,3 +44,32 @@ jobs:
         wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
         mkdir -p ~/.buildozer/android/platform/android-sdk
         unzip commandlinetools-linux-8512546_latest.zip -d ~/.buildozer/android/platform/android-sdk/cmdline-tools
+        mv ~/.buildozer/android/platform/android-sdk/cmdline-tools/cmdline-tools ~/.buildozer/android/platform/android-sdk/cmdline-tools/tools
+        
+        # 接受许可证
+        yes | ~/.buildozer/android/platform/android-sdk/cmdline-tools/tools/bin/sdkmanager --licenses
+
+    - name: Initialize Buildozer
+      run: |
+        export PATH="$HOME/.local/bin:$PATH"
+
+    - name: Build APK
+      run: |
+        export PATH="$HOME/.local/bin:$PATH"
+        export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+        export ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
+        export ANDROID_SDK_ROOT=$ANDROID_HOME
+        
+        # 第一次构建（可能会下载更多依赖）
+        buildozer android clean || true
+        
+        # 实际构建
+        buildozer -v android debug
+      timeout-minutes: 45
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: kivy-app
+        path: bin/*.apk
+        retention-days: 7
