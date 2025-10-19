@@ -1,76 +1,23 @@
-name: Build Kivy Android APK
+name: Build Kivy APK
 
 on:
   push:
     branches: [ main ]
 
 jobs:
-  build-android:
+  build:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Clean up autotools files
-      run: |
-        rm -f configure.ac acinclude.m4 Makefile.am configure
-        rm -rf m4/ autom4te.cache/ aclocal.m4
-
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
-
-    - name: Install system dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y \
-            git \
-            zip \
-            unzip \
-            openjdk-8-jdk \
-            python3-pip \
-            autoconf \
-            automake \
-            libtool \
-            pkg-config \
-            zlib1g-dev \
-            libncurses5-dev \
-            libncursesw5-dev \
-            cmake \
-            libffi-dev \
-            libssl-dev \
-            curl
-
-    - name: Install Buildozer and dependencies
-      run: |
-        pip install --upgrade pip
-        pip install buildozer
-        pip install cython
-        pip install kivy
-
-    - name: Initialize Buildozer
-      run: |
-        export PATH="$HOME/.local/bin:$PATH"
-        # 如果不存在 buildozer.spec，则初始化
-        if [ ! -f buildozer.spec ]; then
-          buildozer init
-        fi
-        # 确保接受许可证
-        echo "android.accept_sdk_license = True" >> buildozer.spec
+    - uses: actions/checkout@v4
 
     - name: Build APK
-      run: |
-        export PATH="$HOME/.local/bin:$PATH"
-        # 清理并构建
-        buildozer android clean
-        buildozer -v android debug
-      env:
-        JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
-
-    - name: Upload APK
-      uses: actions/upload-artifact@v4
+      uses: kivy/buildozer-action@master
       with:
-        name: kivy-app-apk
+        work-dir: .
+        buildozer-version: stable
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: app-apk
         path: bin/*.apk
