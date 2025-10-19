@@ -12,6 +12,15 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Remove problematic autotools files
+      run: |
+        # 删除所有可能引起问题的 autotools 文件
+        find . -name "configure.ac" -delete
+        find . -name "acinclude.m4" -delete  
+        find . -name "Makefile.am" -delete
+        find . -name "configure" -delete
+        rm -rf m4/ autom4te.cache/ aclocal.m4
+
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
@@ -21,43 +30,40 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y \
-            git \
-            zip \
-            unzip \
-            openjdk-8-jdk \
-            python3-pip \
-            autoconf \
-            automake \
-            libtool \
-            pkg-config \
-            zlib1g-dev \
-            libncurses5-dev \
-            libncursesw5-dev \
-            cmake \
-            libffi-dev \
-            libssl-dev
+            git zip unzip openjdk-8-jdk \
+            python3-pip autoconf automake libtool \
+            pkg-config zlib1g-dev libncurses5-dev \
+            libncursesw5-dev cmake libffi-dev libssl-dev
 
     - name: Install Buildozer
       run: |
-        pip install --upgrade pip
-        pip install buildozer
-        pip install cython
-        pip install kivy
+        python -m pip install --upgrade pip
+        pip install buildozer cython kivy
 
     - name: Build APK
       run: |
         export PATH="$HOME/.local/bin:$PATH"
+        
+        # 初始化 buildozer.spec（如果不存在）
         if [ ! -f buildozer.spec ]; then
           buildozer init
         fi
-        sed -i '/^android.accept_sdk_license/d' buildozer.spec
-        echo "android.accept_sdk_license = True" >> buildozer.spec
+        
+        # 确保接受 Android SDK 许可证
+        if ! grep -q "android.accept_sdk_license" buildozer.spec; then
+          echo "android.accept_sdk_license = True" >> buildozer.spec
+        fi
+        
+        # 构建 APK
+        buildozer android clean
         buildozer -v android debug
       env:
         JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
+      timeout-minutes: 30
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: kivy-app
         path: bin/*.apk
+        retention-days: 7
