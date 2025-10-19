@@ -1,23 +1,46 @@
-name: Build Kivy APK
+name: Build Kivy Android APK
 
 on:
   push:
     branches: [ main ]
 
 jobs:
-  build:
+  build-android:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-    - name: Build APK
-      uses: kivy/buildozer-action@master
+    - name: Set up Python
+      uses: actions/setup-python@v5
       with:
-        work-dir: .
-        buildozer-version: stable
+        python-version: '3.11'
 
-    - uses: actions/upload-artifact@v4
-      with:
-        name: app-apk
-        path: bin/*.apk
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+            git zip unzip openjdk-8-jdk \
+            python3-pip autoconf automake libtool \
+            pkg-config zlib1g-dev libncurses5-dev \
+            libncursesw5-dev cmake libffi-dev libssl-dev \
+            curl wget unzip
+
+    - name: Install Buildozer
+      run: |
+        pip install --user --upgrade pip
+        pip install --user buildozer
+        pip install --user cython
+        pip install --user kivy
+
+    - name: Setup Android SDK and NDK
+      run: |
+        # 手动设置 Android SDK
+        mkdir -p ~/.android
+        touch ~/.android/repositories.cfg
+        
+        # 下载并设置 Android SDK 命令行工具
+        wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
+        mkdir -p ~/.buildozer/android/platform/android-sdk
+        unzip commandlinetools-linux-8512546_latest.zip -d ~/.buildozer/android/platform/android-sdk/cmdline-tools
