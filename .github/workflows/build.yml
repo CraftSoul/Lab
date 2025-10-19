@@ -51,6 +51,14 @@ jobs:
         mkdir -p ~/.android
         touch ~/.android/repositories.cfg
 
+    - name: Fix libtool issues
+      run: |
+        sudo apt-get remove -y libtool libtool-bin
+        sudo apt-get install -y libtool libtool-bin
+        libtool --version
+        mkdir -p m4
+        libtoolize --force --copy
+
     - name: Install Buildozer and dependencies
       run: |
         pip install --upgrade pip
@@ -63,6 +71,12 @@ jobs:
     - name: Build with Buildozer
       run: |
         export PATH="$HOME/.local/bin:$PATH"
+        export LIBTOOLIZE=libtoolize
+        export ACLOCAL=aclocal
+        export AUTOMAKE=automake
+        export AUTOHEADER=autoheader
+        export AUTOCONF=autoconf
+        buildozer android clean
         buildozer -v android debug
       env:
         JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
