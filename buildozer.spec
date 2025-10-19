@@ -9,4 +9,3 @@ version = 12.28
 requirements = python3,kivy,plyer,kivymd,https://github.com/kivymd/KivyMD/archive/master.zip
 orientation = portrait
 entrypoint=main.py
-android.accept_sdk_license = True
