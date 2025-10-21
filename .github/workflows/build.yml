@@ -1,75 +1,24 @@
-name: Build Kivy Android APK
+name: Build Kivy APK
 
 on:
   push:
     branches: [ main ]
 
 jobs:
-  build-android:
+  build:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
+    - name: Build with Buildozer
+      uses: artem-sheremet/buildozer-action@v0.2
       with:
-        python-version: '3.11'
+        buildozer-version: stable
+        target: android
+        type: debug
 
-    - name: Install dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y \
-            git zip unzip openjdk-8-jdk \
-            python3-pip autoconf automake libtool \
-            pkg-config zlib1g-dev libncurses5-dev \
-            libncursesw5-dev cmake libffi-dev libssl-dev \
-            curl wget unzip
-
-    - name: Install Buildozer
-      run: |
-        pip install --user --upgrade pip
-        pip install --user buildozer
-        pip install --user cython
-        pip install --user kivy
-
-    - name: Setup Android SDK and NDK
-      run: |
-        # 手动设置 Android SDK
-        mkdir -p ~/.android
-        touch ~/.android/repositories.cfg
-        
-        # 下载并设置 Android SDK 命令行工具
-        wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
-        mkdir -p ~/.buildozer/android/platform/android-sdk
-        unzip commandlinetools-linux-8512546_latest.zip -d ~/.buildozer/android/platform/android-sdk/cmdline-tools
-        mv ~/.buildozer/android/platform/android-sdk/cmdline-tools/cmdline-tools ~/.buildozer/android/platform/android-sdk/cmdline-tools/tools
-        
-        # 接受许可证
-        yes | ~/.buildozer/android/platform/android-sdk/cmdline-tools/tools/bin/sdkmanager --licenses
-
-    - name: Initialize Buildozer
-      run: |
-        export PATH="$HOME/.local/bin:$PATH"
-
-    - name: Build APK
-      run: |
-        export PATH="$HOME/.local/bin:$PATH"
-        export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
-        export ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
-        export ANDROID_SDK_ROOT=$ANDROID_HOME
-        
-        # 第一次构建（可能会下载更多依赖）
-        buildozer android clean || true
-        
-        # 实际构建
-        buildozer -v android debug
-      timeout-minutes: 45
-
-    - name: Upload APK
-      uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v4
       with:
-        name: kivy-app
-        path: bin/*.apk
-        retention-days: 7
+        name: package
+        path: bin/
