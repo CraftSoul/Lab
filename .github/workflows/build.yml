@@ -12,13 +12,19 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Remove problematic autotools files
+    - name: Great Purge
       run: |
         find . -name "configure.ac" -delete
-        find . -name "acinclude.m4" -delete  
+        find . -name "acinclude.m4" -delete
         find . -name "Makefile.am" -delete
         find . -name "configure" -delete
-        rm -rf m4/ autom4te.cache/ aclocal.m4
+        find . -name "config.h.in" -delete
+        find . -name "ltmain.sh" -delete
+        find . -name "libtool.m4" -delete
+        find . -name "*.m4" -delete
+        rm -rf m4/ autom4te.cache/ aclocal.m4 install-sh missing depcomp compile
+        rm -rf .deps/ .libs/
+        ls -la
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -51,6 +57,7 @@ jobs:
     - name: Build APK
       run: |
         export PATH="$HOME/.local/bin:$PATH"
+        export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
         if ! grep -q "android.accept_sdk_license" buildozer.spec; then
           echo "android.accept_sdk_license = True" >> buildozer.spec
         fi
