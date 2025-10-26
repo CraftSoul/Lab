@@ -12,20 +12,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Great Purge
-      run: |
-        find . -name "configure.ac" -delete
-        find . -name "acinclude.m4" -delete
-        find . -name "Makefile.am" -delete
-        find . -name "configure" -delete
-        find . -name "config.h.in" -delete
-        find . -name "ltmain.sh" -delete
-        find . -name "libtool.m4" -delete
-        find . -name "*.m4" -delete
-        rm -rf m4/ autom4te.cache/ aclocal.m4 install-sh missing depcomp compile
-        rm -rf .deps/ .libs/
-        ls -la
-
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
@@ -38,21 +24,13 @@ jobs:
             git zip unzip openjdk-8-jdk \
             python3-pip autoconf automake libtool \
             pkg-config zlib1g-dev libncurses5-dev \
-            libncursesw5-dev cmake libffi-dev libssl-dev
+            libncursesw5-dev cmake libffi-dev libssl-dev \
+            libltdl-dev
 
     - name: Install Buildozer
       run: |
         python -m pip install --upgrade pip
         pip install buildozer cython kivy==2.2.1 plyer
-
-    - name: p4a check
-      run: |
-        pip install python-for-android
-        p4a --version
-
-    - name: Ensure build directories exist
-      run: |
-        mkdir -p .buildozer/android/platform
 
     - name: Build APK
       run: |
@@ -61,7 +39,6 @@ jobs:
         if ! grep -q "android.accept_sdk_license" buildozer.spec; then
           echo "android.accept_sdk_license = True" >> buildozer.spec
         fi
-        rm -rf .buildozer
         buildozer -v android debug
       env:
         JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
