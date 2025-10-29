@@ -40,7 +40,7 @@ jobs:
       run: |
         export PATH="$HOME/.local/bin:$PATH"
         export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
-        pip install --user python-for-android==2023.8.17
+        pip install --user python-for-android==2023.9.16
         if ! grep -q "android.accept_sdk_license" buildozer.spec; then
           echo "android.accept_sdk_license = True" >> buildozer.spec
         fi
