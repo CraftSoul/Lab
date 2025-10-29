@@ -13,4 +13,3 @@ android.allow_api_min = 21
 android.api = 33
 android.minapi = 21
 android.ndk = 23b
-p4a.source_dir = .p4a
