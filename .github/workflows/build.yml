@@ -25,7 +25,7 @@ jobs:
             python3-pip autoconf automake libtool \
             pkg-config zlib1g-dev libncurses5-dev \
             libncursesw5-dev cmake libffi-dev libssl-dev
-        sudo apt install libltdl7-dev
+        sudo apt install libltdl-dev
 
     - name: Install Buildozer and dependencies
       run: |
