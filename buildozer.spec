@@ -13,3 +13,4 @@ android.allow_api_min = 21
 android.api = 33
 android.minapi = 21
 android.ndk = 25
+exclude_patterns = **/test/*, **/tests/*
