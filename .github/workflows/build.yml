@@ -32,24 +32,45 @@ jobs:
         python -m pip install --upgrade pip
         pip install buildozer cython==0.29.33 kivy==2.2.1 plyer
 
-    - name: Fix jnius compatibility issue
+    - name: Fix jnius compatibility issue and set language_level
       run: |
         find . -name "jnius_utils.pxi" -exec sed -i 's/isinstance(arg, long)/isinstance(arg, int)/g' {} \; 2>/dev/null || true
         find . -name "*.pyx" -exec sed -i 's/isinstance(\(.*\), long)/isinstance(\1, int)/g' {} \; 2>/dev/null || true
+        find . -name "*.pyx" -exec sh -c 'if ! grep -q "language_level" "{}"; then sed -i "1i # cython: language_level=3" "{}"; fi' \; 2>/dev/null || true
+
+    - name: Create setup.py with language_level (备用方案)
+      run: |
+        cat > setup.py << EOF
+        from distutils.core import setup
+        from Cython.Build import cythonize
+        from distutils.extension import Extension
+        
+        extensions = [
+            Extension("*", ["*.pyx"],
+                      define_macros=[('CYTHON_LANGUAGE_LEVEL', '3')])
+        ]
+        setup(
+            ext_modules=cythonize(extensions, compiler_directives={'language_level': 3})
+        )
+        EOF
 
     - name: Build APK with specific p4a version
       run: |
         export PATH="$HOME/.local/bin:$PATH"
         export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+        export CFLAGS="-DCYTHON_LANGUAGE_LEVEL=3"
         pip install --user python-for-android==2023.9.16
         if ! grep -q "android.accept_sdk_license" buildozer.spec; then
           echo "android.accept_sdk_license = True" >> buildozer.spec
         fi
+        if ! grep -q "cython_language_level" buildozer.spec; then
+          echo "cython_language_level = 3" >> buildozer.spec
+        fi
         rm -rf .buildozer
-        
         buildozer -v android debug
       env:
         JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
+        CYTHON_LANGUAGE_LEVEL: "3"
         P4A_RELEASE_KEYSTORE: ${{ secrets.P4A_RELEASE_KEYSTORE }}
         P4A_RELEASE_KEYSTORE_PASSWD: ${{ secrets.P4A_RELEASE_KEYSTORE_PASSWD }}
         P4A_RELEASE_KEYALIAS_PASSWD: ${{ secrets.P4A_RELEASE_KEYALIAS_PASSWD }}
