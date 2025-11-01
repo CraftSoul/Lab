@@ -42,7 +42,7 @@ jobs:
       run: |
         if [ -f buildozer.spec ]; then
           cp buildozer.spec buildozer.spec.backup
-          sed -i 's/requirements = .*/requirements = kivy==2.2.1,openssl,requests,plyer,kivymd,cython/' buildozer.spec
+          sed -i 's/requirements = .*/requirements = kivy==2.2.1,plyer,kivymd,cython/' buildozer.spec
           sed -i 's|,https://github.com/kivymd/KivyMD/archive/master.zip||g' buildozer.spec
         fi
 
