@@ -4,9 +4,8 @@ package.name = craft.soul.dl6
 package.domain = org.test
 source.dir = .
 source.include_exts = py,png,jpg,kv,atlas,ttf
-source.include_patterns = image/*
 version = 12.28
-requirements = python==3.9,kivy==2.2.1,plyer,cython,kivymd,https://github.com/kivymd/KivyMD/archive/master.zip
+requirements = kivy==2.2.1,python3,openssl,requests,plyer,cython,kivymd,https://github.com/kivymd/KivyMD/archive/master.zip
 orientation = portrait
 entrypoint=main.py
 android.accept_sdk_license = True
