@@ -14,6 +14,6 @@ android.allow_api_min = 21
 android.api = 33
 android.minapi = 21
 android.ndk = 25b
-android.sdk = 26
+android.sdk = 34
 android.gradle_download = https://services.gradle.org/distributions/gradle-7.5-all.zip
 exclude_patterns = **/test/*, **/tests/*
