@@ -5,7 +5,7 @@ package.domain = org.test
 source.dir = .
 source.include_exts = py,png,jpg,kv,atlas,ttf
 version = 12.28
-requirements = kivy==2.2.1,openssl,requests,plyer,kivymd
+requirements = kivy==2.2.1,plyer,kivymd,cython
 orientation = portrait
 entrypoint=main.py
 android.accept_sdk_license = True
