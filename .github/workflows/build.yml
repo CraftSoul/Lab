@@ -46,9 +46,6 @@ jobs:
         if ! grep -q "android.accept_sdk_license" buildozer.spec; then
           echo "android.accept_sdk_license = True" >> buildozer.spec
         fi
-        if ! grep -q "android.sdk" buildozer.spec; then
-          echo "android.sdk = 34" >> buildozer.spec
-        fi
         if ! grep -q "android.ndk" buildozer.spec; then
           echo "android.ndk = 25b" >> buildozer.spec
         fi
