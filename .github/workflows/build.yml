@@ -38,48 +38,72 @@ jobs:
         find . -name "*.pyx" -exec sed -i 's/isinstance(\(.*\), long)/isinstance(\1, int)/g' {} \; 2>/dev/null || true
         find . -name "*.pyx" -exec sh -c 'if ! grep -q "language_level" "{}"; then sed -i "1i # cython: language_level=3" "{}"; fi' \; 2>/dev/null || true
 
-    - name: Create setup.py with language_level (备用方案)
+    - name: Configure Buildozer and Android SDK
       run: |
-        cat > setup.py << EOF
-        from distutils.core import setup
-        from Cython.Build import cythonize
-        from distutils.extension import Extension
-        
-        extensions = [
-            Extension("*", ["*.pyx"],
-                      define_macros=[('CYTHON_LANGUAGE_LEVEL', '3')])
-        ]
-        setup(
-            ext_modules=cythonize(extensions, compiler_directives={'language_level': 3})
-        )
-        EOF
+        if [ ! -f buildozer.spec ]; then
+          buildozer init
+        fi
+        if ! grep -q "android.accept_sdk_license" buildozer.spec; then
+          echo "android.accept_sdk_license = True" >> buildozer.spec
+        fi
+        if ! grep -q "android.sdk" buildozer.spec; then
+          echo "android.sdk = 26" >> buildozer.spec
+        fi
+        if ! grep -q "android.ndk" buildozer.spec; then
+          echo "android.ndk = 25b" >> buildozer.spec
+        fi
+        if ! grep -q "android.api" buildozer.spec; then
+          echo "android.api = 33" >> buildozer.spec
+        fi
+        if ! grep -q "android.minapi" buildozer.spec; then
+          echo "android.minapi = 21" >> buildozer.spec
+        fi
+        if ! grep -q "android.gradle_download" buildozer.spec; then
+          echo "android.gradle_download = https://services.gradle.org/distributions/gradle-7.5-all.zip" >> buildozer.spec
+        fi
 
-    - name: Build APK with specific p4a version
+    - name: Build APK with retry and debug info
       run: |
         export PATH="$HOME/.local/bin:$PATH"
         export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
         export CFLAGS="-DCYTHON_LANGUAGE_LEVEL=3"
-        pip install --user python-for-android==2023.9.16
-        if ! grep -q "android.accept_sdk_license" buildozer.spec; then
-          echo "android.accept_sdk_license = True" >> buildozer.spec
-        fi
-        if ! grep -q "cython_language_level" buildozer.spec; then
-          echo "cython_language_level = 3" >> buildozer.spec
-        fi
+        export ANDROID_SDK_HOME="$HOME/.buildozer/android/platform/android-sdk"
+        export ANDROID_NDK_HOME="$HOME/.buildozer/android/platform/android-ndk-r25b"
         rm -rf .buildozer
+        rm -rf ~/.buildozer
+        pip install --user python-for-android==2023.9.16
+        echo "第一次构建尝试..."
+        timeout 600 buildozer -v android debug || true
+        chmod +x .buildozer/android/platform/*/gradlew 2>/dev/null || true
+        find .buildozer -name "gradlew" -exec chmod +x {} \; 2>/dev/null || true
+        echo "第二次构建尝试..."
         buildozer -v android debug
+        
       env:
         JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
         CYTHON_LANGUAGE_LEVEL: "3"
+        ANDROID_SDK_HOME: "/home/runner/.buildozer/android/platform/android-sdk"
+        ANDROID_NDK_HOME: "/home/runner/.buildozer/android/platform/android-ndk-r25b"
         P4A_RELEASE_KEYSTORE: ${{ secrets.P4A_RELEASE_KEYSTORE }}
         P4A_RELEASE_KEYSTORE_PASSWD: ${{ secrets.P4A_RELEASE_KEYSTORE_PASSWD }}
         P4A_RELEASE_KEYALIAS_PASSWD: ${{ secrets.P4A_RELEASE_KEYALIAS_PASSWD }}
         P4A_RELEASE_KEYALIAS: ${{ secrets.P4A_RELEASE_KEYALIAS }}
-      timeout-minutes: 40
+      timeout-minutes: 50
 
     - name: Upload APK
+      if: success()
       uses: actions/upload-artifact@v4
       with:
         name: kivy-app
         path: bin/*.apk
+        retention-days: 7
+
+    - name: Upload build logs on failure
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-logs
+        path: |
+          .buildozer/**/*.log
+          .buildozer/**/build.log
         retention-days: 7
